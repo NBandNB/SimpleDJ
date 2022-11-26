@@ -1,0 +1,6 @@
+[submodule "libraries/curl"]
+	path = libraries/curl
+	url = https://github.com/curl/curl
+[submodule "libraries/wolfssl"]
+	path = libraries/wolfssl
+	url = https://github.com/wolfSSL/wolfssl
