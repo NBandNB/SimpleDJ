@@ -15,6 +15,7 @@ public:
     int32_t count() const override;
 
     std::shared_ptr<Song> getNextSong();
+    bool hasSongs() const;
 
 private slots:
     void removeSong();

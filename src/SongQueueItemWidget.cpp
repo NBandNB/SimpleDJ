@@ -18,7 +18,7 @@ SongQueueItemWidget::SongQueueItemWidget(const std::shared_ptr<Song>& song, QWid
     layout->addWidget(songNameLabel.get(), 0, 1);
     layout->addWidget(artistNameLabel.get(), 1, 1);
     layout->addWidget(removeButton.get(), 2, 1);
-
+    layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 2, 3, 1);
     setLayout(layout.get());
     show();
 }

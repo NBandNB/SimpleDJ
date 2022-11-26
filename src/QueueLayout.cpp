@@ -32,10 +32,30 @@ int32_t QueueLayout::count() const {
 }
 
 std::shared_ptr<Song> QueueLayout::getNextSong() {
-    std::shared_ptr<Song> song = dynamic_cast<SongQueueItemWidget*>(itemAt(0)->widget())->getSong();
-    QBoxLayout::takeAt(0)->widget()->deleteLater();
-    update();
-    updatedSignal();
+    std::shared_ptr<Song> song;
+    for(int i = 0; i < count(); i++){
+        auto* songQueueItemWidget = dynamic_cast<SongQueueItemWidget*>(itemAt(i)->widget());
+        if(songQueueItemWidget->getSong()->getDownloaded()){
+            song = songQueueItemWidget->getSong();
+            QBoxLayout::takeAt(i)->widget()->deleteLater();
+            update();
+            updatedSignal();
+            return song;
+        }
+    }
     return song;
+}
+
+bool QueueLayout::hasSongs() const {
+    if(count() > 0){
+        for(int i = 0; i < count(); i++){
+            if(dynamic_cast<SongQueueItemWidget*>(itemAt(i)->widget())->getSong()->getDownloaded()){
+                return true;
+            }
+        }
+        return false;
+    } else {
+        return false;
+    }
 }
 

@@ -56,11 +56,7 @@ void CurrentSongWidget::setSong(const std::shared_ptr<Song>& song) {
 
 void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
     if (status == QMediaPlayer::EndOfMedia) {
-        if(requestedQueue->isEmpty()){
-            setSong(defaultQueue->getNextSong());
-        } else {
-            setSong(requestedQueue->getNextSong());
-        }
+        playNextSong();
         if(pauseAtEnd){
             pause();
         }
@@ -79,10 +75,22 @@ void CurrentSongWidget::pauseAtEndButton() {
 }
 
 void CurrentSongWidget::playNextSong() {
-    if(requestedQueue->isEmpty()){
+    if(requestedQueue->hasSongs()){
+        setSong(requestedQueue->getNextSong());
+    } else if(defaultQueue->hasSongs()){
         setSong(defaultQueue->getNextSong());
     } else {
-        setSong(requestedQueue->getNextSong());
+        std::shared_ptr<Song> song;
+        for (int i = 0; i < 10; i++) {
+            song = songLoader->getRand();
+            if (song->getDownloaded()) {
+                break;
+            }
+        }
+        if (!song->getDownloaded()) {
+            player->pause();
+        }
+        setSong(song);
     }
 }
 
