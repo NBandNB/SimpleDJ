@@ -9,13 +9,18 @@
 #include <fstream>
 #include "Song.h"
 
-class SongLoader{
+class SongLoader : public QObject
+{
+    Q_OBJECT
 private:
     std::filesystem::path directory;
 
     std::shared_mutex mutex;
     std::unordered_map<QString, std::shared_ptr<Song>> songs;
     std::queue<QString> downloadQueue;
+
+    bool locked;
+    QString pin;
 
 public:
     SongLoader(const std::filesystem::path& directory);
@@ -27,4 +32,14 @@ public:
     std::shared_ptr<Song> getById(const QString& id);
     bool isDownloaded(const QString& id);
     QString getSongPath(const QString& id);
+
+    bool isLocked() const;
+    void setPin(const QString& newPin);
+    bool unlock(const QString& pinAttempt);
+    void lock();
+signals:
+    void lockedSignal();
+    void unlockedSignal();
+    void downloadCompleteSignal(const QString& id);
+
 };

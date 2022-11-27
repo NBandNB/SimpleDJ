@@ -21,7 +21,10 @@ qt_add_executable(SimpleDJ
         ${include_dir}/SongSearchItemWidget.h
         ${include_dir}/SongSearchWidget.h
         ${include_dir}/Song.h
+        ${include_dir}/SongLoader.h
         ${include_dir}/QueueLayout.h
+        ${include_dir}/ChangePinPopup.h
+        ${include_dir}/UnlockPopup.h
         MainWindow.cpp
         CurrentSongWidget.cpp
         Song.cpp
@@ -30,7 +33,9 @@ qt_add_executable(SimpleDJ
         SongSearchItemWidget.cpp
         SongSearchWidget.cpp
         SongLoader.cpp
-        QueueLayout.cpp)
+        QueueLayout.cpp
+        ChangePinPopup.cpp
+        UnlockPopup.cpp)
 
 target_link_libraries(SimpleDJ PRIVATE
         Qt::Core

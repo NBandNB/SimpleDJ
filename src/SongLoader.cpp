@@ -8,7 +8,8 @@ SongLoader::SongLoader(const std::filesystem::path& directory)
     : directory(directory),
     mutex(),
     songs(),
-    downloadQueue()
+    downloadQueue(),
+    locked(false)
 {
     if(!std::filesystem::exists(directory)){
         std::filesystem::create_directory(directory);
@@ -120,3 +121,32 @@ bool SongLoader::isDownloaded(const QString &id) {
 QString SongLoader::getSongPath(const QString &id) {
     return QString::fromStdString((directory / (id.toStdString() + ".wav")).string());
 }
+
+bool SongLoader::isLocked() const{
+    return locked;
+}
+
+void SongLoader::setPin(const QString& newPin){
+    pin = newPin;
+}
+
+bool SongLoader::unlock(const QString& pinAttempt){
+    if(pinAttempt == pin) {
+        if (locked) {
+            locked = false;
+            unlockedSignal();
+        }
+        return locked;
+    }
+    else return locked;
+}
+
+void SongLoader::lock(){
+    if(!locked){
+        locked = true;
+        lockedSignal();
+    }
+    else
+        locked = true;
+}
+

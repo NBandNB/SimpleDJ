@@ -1,5 +1,7 @@
 #include "CurrentSongWidget.h"
 #include <QAudioOutput>
+#include "UnlockPopup.h"
+#include "ChangePinPopup.h"
 
 CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue, std::shared_ptr<QueueLayout> defaultQueue, std::shared_ptr<SongLoader> songLoader, QWidget *parent)
     : QWidget(parent),
@@ -14,6 +16,9 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     playButton(std::make_shared<QPushButton>("Play", this)),
     pauseButton(std::make_shared<QPushButton>("Pause", this)),
     returnToBeginningButton(std::make_shared<QPushButton>("Return to beginning", this)),
+    lockButton(std::make_shared<QPushButton>("Lock", this)),
+    unlockButton(std::make_shared<QPushButton>("Unlock", this)),
+    changePinButton(std::make_shared<QPushButton>("Change pin", this)),
     requestedQueue(std::move(requestedQueue)),
     defaultQueue(std::move(defaultQueue)),
     player(std::make_shared<QMediaPlayer>(this)),
@@ -32,7 +37,10 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     layout->addWidget(returnToBeginningButton.get(), 0, 4);
     layout->addWidget(playButton.get(), 1, 3);
     layout->addWidget(pauseButton.get(), 1, 4);
-    layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 5, 3, 1);
+    layout->addWidget(lockButton.get(), 0, 5);
+    layout->addWidget(unlockButton.get(), 1, 5);
+    layout->addWidget(changePinButton.get(), 2, 5);
+    layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 6, 3, 1);
     if(this->defaultQueue->hasSongs())
     {
         setSong(this->defaultQueue->getNextSong());
@@ -44,6 +52,12 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     connect(playButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::play);
     connect(pauseButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::pause);
     connect(returnToBeginningButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::returnToBeginning);
+    connect(lockButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::lockButtonPress);
+    connect(unlockButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::unlockButtonPress);
+    connect(changePinButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::changePin);
+    connect(this->songLoader.get(), &SongLoader::lockedSignal, this, &CurrentSongWidget::lock);
+    connect(this->songLoader.get(), &SongLoader::unlockedSignal, this, &CurrentSongWidget::unlock);
+    unlock();
     show();
 }
 
@@ -58,24 +72,19 @@ void CurrentSongWidget::setSong(const std::shared_ptr<Song>& song) {
 }
 
 QString toTime(long long time) {
-    long long hours = time / 3600;
-    long long minutes = (time / 60) % 60;
-    long long seconds = time % 60;
-    if(hours == 0) {
-        if(seconds < 10)
-            return QString::number(minutes) + ":0" + QString::number(seconds);
-        return QString::number(minutes) + ":" + QString::number(seconds);
-    } else {
-        if(minutes < 10) {
-            if(seconds < 10)
-                return QString::number(hours) + ":0" + QString::number(minutes) + ":0" + QString::number(seconds);
-            return QString::number(hours) + ":0" + QString::number(minutes) + ":" + QString::number(seconds);
-        } else {
-            if(seconds < 10)
-                return QString::number(hours) + ":" + QString::number(minutes) + ":0" + QString::number(seconds);
-            return QString::number(hours) + ":" + QString::number(minutes) + ":" + QString::number(seconds);
-        }
+    QString hours = QString::number(time / 3600);
+    QString minutes = QString::number((time / 60) % 60);
+    QString seconds = QString::number(time % 60);
+    if(seconds.length() == 1) {
+        seconds = "0" + seconds;
     }
+    if(minutes.length() == 1) {
+        minutes = "0" + minutes;
+    }
+    if(hours == "0"){
+        return minutes + ":" + seconds;
+    }
+    return hours + ":" + minutes + ":" + seconds;
 }
 
 void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
@@ -91,7 +100,7 @@ void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
 }
 
 void CurrentSongWidget::positionChanged(qint64 position) {
-    timeLabel->setText(QString::number(position / 1000));
+    timeLabel->setText(toTime(position / 1000));
 }
 
 void CurrentSongWidget::pauseAtEndButton() {
@@ -128,5 +137,31 @@ void CurrentSongWidget::pause() {
 
 void CurrentSongWidget::returnToBeginning() {
     player->setPosition(0);
+}
+
+void CurrentSongWidget::changePin() {
+    ChangePinPopup popup(songLoader, this);
+    popup.exec();
+}
+
+void CurrentSongWidget::lockButtonPress() {
+    songLoader->lock();
+}
+
+void CurrentSongWidget::unlockButtonPress() {
+    UnlockPopup popup(songLoader, this);
+    popup.exec();
+}
+
+void CurrentSongWidget::lock() {
+    lockButton->setEnabled(false);
+    unlockButton->setEnabled(true);
+    changePinButton->setEnabled(false);
+}
+
+void CurrentSongWidget::unlock() {
+    lockButton->setEnabled(true);
+    unlockButton->setEnabled(false);
+    changePinButton->setEnabled(true);
 }
 

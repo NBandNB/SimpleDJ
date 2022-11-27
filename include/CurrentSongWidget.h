@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QLineEdit>
 #include "Song.h"
 #include "QueueLayout.h"
 #include "SongLoader.h"
@@ -26,6 +27,11 @@ private slots:
     void play();
     void pause();
     void returnToBeginning();
+    void changePin();
+    void lock();
+    void unlock();
+    void unlockButtonPress();
+    void lockButtonPress();
 
 
 private:
@@ -47,6 +53,10 @@ private:
     std::shared_ptr<QPushButton> playButton;
     std::shared_ptr<QPushButton> pauseButton;
     std::shared_ptr<QPushButton> returnToBeginningButton;
+
+    std::shared_ptr<QPushButton> lockButton;
+    std::shared_ptr<QPushButton> unlockButton;
+    std::shared_ptr<QPushButton> changePinButton;
 
     std::shared_ptr<QueueLayout> requestedQueue;
     std::shared_ptr<QueueLayout> defaultQueue;
