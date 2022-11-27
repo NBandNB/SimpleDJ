@@ -124,7 +124,7 @@ void SongSearchWidget::downloadComplete(const std::vector<std::shared_ptr<Song>>
         delete item;
     }
     for(const auto& song : songs){
-        if(songLoader->isDownloaded(song->getId()))
+        if(songLoader->containsSong(song->getId()))
             searchResultsLayout->insertWidget(searchResultsLayout->count() - 1, new SongSearchItemWidget(songLoader->getById(song->getId()), songLoader, requestedQueue, searchResultsWidget.get()));
         else
             searchResultsLayout->insertWidget(searchResultsLayout->count() - 1, new SongSearchItemWidget(song, songLoader, requestedQueue, searchResultsWidget.get()));

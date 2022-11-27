@@ -17,7 +17,9 @@ private:
 
     std::shared_mutex mutex;
     std::unordered_map<QString, std::shared_ptr<Song>> songs;
-    std::queue<QString> downloadQueue;
+    std::queue<std::pair<QString, bool>> downloadQueue;
+    std::queue<QString> deleteQueue;
+    std::list<std::string> songIds;
 
     bool locked;
     QString pin;
@@ -31,7 +33,9 @@ public:
     std::shared_ptr<Song> getRand();
     std::shared_ptr<Song> getById(const QString& id);
     bool isDownloaded(const QString& id);
+    bool containsSong(const QString& id);
     QString getSongPath(const QString& id);
+    void deleteSong(const QString& id);
 
     bool isLocked() const;
     void setPin(const QString& newPin);
@@ -41,5 +45,6 @@ signals:
     void lockedSignal();
     void unlockedSignal();
     void downloadCompleteSignal(const QString& id);
+    void deleteSongSignal(const QString& id);
 
 };

@@ -9,20 +9,24 @@ SongSearchItemWidget::SongSearchItemWidget(const std::shared_ptr<Song>& song, st
     songNameLabel(std::make_shared<QLabel>(song->getName(), this)),
     authorNameLabel(std::make_shared<QLabel>(song->getAuthor(), this)),
     addButton(std::make_shared<QPushButton>("Add to Queue", this)),
+    deleteButton(std::make_shared<QPushButton>("Delete", this)),
     downloadButton(std::make_shared<QPushButton>("Download", this)),
     downloadAndAddButton(std::make_shared<QPushButton>("Download and Add to Queue", this))
 {
     layout->addWidget(songNameLabel.get());
     layout->addWidget(authorNameLabel.get());
     layout->addWidget(addButton.get());
+    layout->addWidget(deleteButton.get());
     layout->addWidget(downloadButton.get());
     layout->addWidget(downloadAndAddButton.get());
     connect(addButton.get(), &QAbstractButton::clicked, this, &SongSearchItemWidget::addToQueue);
+    connect(deleteButton.get(), &QAbstractButton::clicked, this, &SongSearchItemWidget::deleteSong);
     connect(downloadButton.get(), &QAbstractButton::clicked, this, &SongSearchItemWidget::download);
     connect(downloadAndAddButton.get(), &QAbstractButton::clicked, this, &SongSearchItemWidget::downloadAndAddToQueue);
     updateButtons();
     setLayout(layout.get());
     connect(this->songLoader.get(), &SongLoader::downloadCompleteSignal, this, &SongSearchItemWidget::downloaded);
+    connect(this->songLoader.get(), &SongLoader::deleteSongSignal, this, &SongSearchItemWidget::deleted);
     connect(this->songLoader.get(), &SongLoader::unlockedSignal, this, &SongSearchItemWidget::unlocked);
     connect(this->songLoader.get(), &SongLoader::lockedSignal, this, &SongSearchItemWidget::locked);
     show();
@@ -30,6 +34,10 @@ SongSearchItemWidget::SongSearchItemWidget(const std::shared_ptr<Song>& song, st
 
 void SongSearchItemWidget::addToQueue(){
     requestedQueue->addSong(songLoader->getById(song->getId()));
+}
+
+void SongSearchItemWidget::deleteSong(){
+    songLoader->deleteSong(song->getId());
 }
 
 void SongSearchItemWidget::download(){
@@ -60,17 +68,26 @@ void SongSearchItemWidget::downloaded(const QString& id){
     }
 }
 
+void SongSearchItemWidget::deleted(const QString& id){
+    if(id == song->getId()){
+        updateButtons();
+    }
+}
+
 void SongSearchItemWidget::updateButtons() {
     if(song->getDownloaded()){
         addButton->show();
+        deleteButton->show();
         downloadButton->hide();
         downloadAndAddButton->hide();
     } else if(!this->songLoader->isLocked()) {
         addButton->hide();
+        deleteButton->hide();
         downloadButton->show();
         downloadAndAddButton->show();
     } else {
         addButton->hide();
+        deleteButton->hide();
         downloadButton->hide();
         downloadAndAddButton->hide();
     }

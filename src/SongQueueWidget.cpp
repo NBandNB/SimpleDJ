@@ -7,8 +7,8 @@ SongQueueWidget::SongQueueWidget(std::shared_ptr<SongLoader> songLoader, QWidget
     : QScrollArea(parent),
     songLoader(std::move(songLoader)),
     layout(std::make_shared<QVBoxLayout>(this)),
-    defaultQueueLayout(std::make_shared<QueueLayout>()),
-    requestedQueueLayout(std::make_shared<QueueLayout>()),
+    defaultQueueLayout(std::make_shared<QueueLayout>(songLoader, this)),
+    requestedQueueLayout(std::make_shared<QueueLayout>(songLoader, this)),
     defaultQueueLabel(std::make_shared<QLabel>("Default queue", this)),
     requestedQueueLabel(std::make_shared<QLabel>("Requested queue", this)),
     mainWidget(new QWidget(this))

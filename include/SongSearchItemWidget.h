@@ -28,10 +28,12 @@ private:
     std::shared_ptr<QLabel> authorNameLabel;
 
     std::shared_ptr<QPushButton> addButton;
+    std::shared_ptr<QPushButton> deleteButton;
     std::shared_ptr<QPushButton> downloadButton;
     std::shared_ptr<QPushButton> downloadAndAddButton;
 
     void addToQueue();
+    void deleteSong();
     void download();
     void downloadAndAddToQueue();
 
@@ -39,6 +41,7 @@ private:
 
 private slots:
     void downloaded(const QString& id);
+    void deleted(const QString& id);
     void unlocked();
     void locked();
 

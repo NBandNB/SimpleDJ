@@ -2,10 +2,11 @@
 #include <iostream>
 #include "SongQueueItemWidget.h"
 
-QueueLayout::QueueLayout(QWidget *parent)
-    : QVBoxLayout(parent)
+QueueLayout::QueueLayout(std::shared_ptr<SongLoader> songLoader, QWidget *parent)
+    : QVBoxLayout(parent),
+    songLoader(std::move(songLoader))
 {
-
+    connect(this->songLoader.get(), &SongLoader::deleteSongSignal, this, &QueueLayout::deleteSong);
 }
 
 void QueueLayout::addSong(const std::shared_ptr<Song>& song, bool noSignal)
@@ -23,6 +24,24 @@ void QueueLayout::removeSong()
 {
     removeWidget(dynamic_cast<QPushButton*>(sender())->parentWidget());
     dynamic_cast<QPushButton*>(sender())->parentWidget()->deleteLater();
+    update();
+    updatedSignal();
+}
+
+void QueueLayout::deleteSong(const QString &id) {
+    std::vector<int> toRemove;
+    for(int i = 0; i < count(); i++){
+        if(dynamic_cast<SongQueueItemWidget*>(itemAt(i)->widget())->getSong()->getId() == id){
+            toRemove.push_back(i);
+        }
+    }
+    int offset = 0;
+    for(int i : toRemove){
+        auto* widget = itemAt(i - offset)->widget();
+        removeWidget(itemAt(i - offset)->widget());
+        widget->deleteLater();
+        offset += 1;
+    }
     update();
     updatedSignal();
 }

@@ -24,11 +24,11 @@ QString Song::getId() {
     return id;
 }
 
-bool Song::getDownloaded() {
+bool Song::getDownloaded() const {
     return downloaded;
 }
 
-bool Song::getImageDownloaded() {
+bool Song::getImageDownloaded() const {
     return imageDownloaded;
 }
 
@@ -44,12 +44,12 @@ void Song::setImage(QImage image) {
     this->image = std::move(image);
 }
 
-void Song::setDownloaded() {
-    downloaded = true;
+void Song::setDownloaded(bool newDownloaded) {
+    this->downloaded = newDownloaded;
     downloadedSignal();
 }
 
-void Song::setImageDownloaded() {
-    imageDownloaded = true;
+void Song::setImageDownloaded(bool newDownloaded) {
+    imageDownloaded = newDownloaded;
     imageDownloadedSignal();
 }

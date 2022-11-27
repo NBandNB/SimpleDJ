@@ -24,14 +24,14 @@ public:
     QString getAuthor();
     QImage getImage();
     QString getId();
-    bool getDownloaded();
-    bool getImageDownloaded();
+    bool getDownloaded() const;
+    bool getImageDownloaded() const;
 
     void setName(QString name);
     void setAuthor(QString author);
     void setImage(QImage image);
-    void setDownloaded();
-    void setImageDownloaded();
+    void setDownloaded(bool newDownloaded = true);
+    void setImageDownloaded(bool newDownloaded = true);
 
 signals:
     void downloadedSignal();
