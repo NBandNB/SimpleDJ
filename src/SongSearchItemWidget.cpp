@@ -22,9 +22,9 @@ SongSearchItemWidget::SongSearchItemWidget(const std::shared_ptr<Song>& song, st
     connect(downloadAndAddButton.get(), &QAbstractButton::clicked, this, &SongSearchItemWidget::downloadAndAddToQueue);
     updateButtons();
     setLayout(layout.get());
-    connect(songLoader.get(), &SongLoader::downloadCompleteSignal, this, &SongSearchItemWidget::downloaded);
-    connect(songLoader.get(), &SongLoader::unlockedSignal, this, &SongSearchItemWidget::unlocked);
-    connect(songLoader.get(), &SongLoader::lockedSignal, this, &SongSearchItemWidget::locked);
+    connect(this->songLoader.get(), &SongLoader::downloadCompleteSignal, this, &SongSearchItemWidget::downloaded);
+    connect(this->songLoader.get(), &SongLoader::unlockedSignal, this, &SongSearchItemWidget::unlocked);
+    connect(this->songLoader.get(), &SongLoader::lockedSignal, this, &SongSearchItemWidget::locked);
     show();
 }
 
