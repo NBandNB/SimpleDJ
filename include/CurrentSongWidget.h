@@ -22,6 +22,7 @@ public:
 private slots:
     void mediaStatusChanged(QMediaPlayer::MediaStatus status);
     void positionChanged(qint64 position);
+    void durationChanged(qint64 duration);
     void pauseAtEndButton();
     void playNextSong();
     void play();

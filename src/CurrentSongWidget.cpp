@@ -47,6 +47,7 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     }
     connect(player.get(), &QMediaPlayer::mediaStatusChanged, this, &CurrentSongWidget::mediaStatusChanged);
     connect(player.get(), &QMediaPlayer::positionChanged, this, &CurrentSongWidget::positionChanged);
+    connect(player.get(), &QMediaPlayer::durationChanged, this, &CurrentSongWidget::durationChanged);
     connect(pauseAtEndButtonButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::pauseAtEndButton);
     connect(playNextSongButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::playNextSong);
     connect(playButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::play);
@@ -94,13 +95,14 @@ void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
             pause();
         }
     }
-    else if (status == QMediaPlayer::LoadedMedia) {
-        timeLabel2->setText(toTime(player->duration() / 1000));
-    }
 }
 
 void CurrentSongWidget::positionChanged(qint64 position) {
     timeLabel->setText(toTime(position / 1000));
+}
+
+void CurrentSongWidget::durationChanged(qint64 duration) {
+    timeLabel2->setText(toTime(duration / 1000));
 }
 
 void CurrentSongWidget::pauseAtEndButton() {
