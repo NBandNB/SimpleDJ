@@ -74,5 +74,4 @@ void SongSearchItemWidget::updateButtons() {
         downloadButton->hide();
         downloadAndAddButton->hide();
     }
-    adjustSize();
 }
