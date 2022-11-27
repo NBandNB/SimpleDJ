@@ -11,7 +11,7 @@ SongQueueWidget::SongQueueWidget(std::shared_ptr<SongLoader> songLoader, QWidget
     requestedQueueLayout(std::make_shared<QueueLayout>()),
     defaultQueueLabel(std::make_shared<QLabel>("Default queue", this)),
     requestedQueueLabel(std::make_shared<QLabel>("Requested queue", this)),
-    mainWidget(std::make_shared<QWidget>(this))
+    mainWidget(new QWidget(this))
 {
     layout->addWidget(requestedQueueLabel.get());
     layout->addLayout(requestedQueueLayout.get());
@@ -23,7 +23,7 @@ SongQueueWidget::SongQueueWidget(std::shared_ptr<SongLoader> songLoader, QWidget
     QObject::connect(requestedQueueLayout.get(), &QueueLayout::updatedSignal, this, &SongQueueWidget::requestedQueueUpdated);
     QObject::connect(defaultQueueLayout.get(), &QueueLayout::updatedSignal, this, &SongQueueWidget::defaultQueueUpdated);
     mainWidget->setLayout(layout.get());
-    setWidget(mainWidget.get());
+    setWidget(mainWidget);
     show();
 }
 

@@ -28,7 +28,7 @@ private:
     std::shared_ptr<QLabel> defaultQueueLabel;
     std::shared_ptr<QLabel> requestedQueueLabel;
 
-    std::shared_ptr<QWidget> mainWidget;
+    QWidget* mainWidget;
 
     std::shared_ptr<SongLoader> songLoader;
 
