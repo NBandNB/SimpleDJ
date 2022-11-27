@@ -9,6 +9,8 @@
 #include <QtDebug>
 #include <iostream>
 #include <QLabel>
+#include <sstream>
+#include <string>
 #include <thread>
 
 SongSearchWidget::SongSearchWidget(std::shared_ptr<QueueLayout> requestedQueue, std::shared_ptr<SongLoader> songLoader, QWidget *parent)
