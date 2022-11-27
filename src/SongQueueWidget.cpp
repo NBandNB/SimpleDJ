@@ -16,8 +16,11 @@ SongQueueWidget::SongQueueWidget(std::shared_ptr<SongLoader> songLoader, QWidget
     layout->addWidget(requestedQueueLabel.get());
     layout->addLayout(requestedQueueLayout.get());
     layout->addWidget(defaultQueueLabel.get());
-    for(int i = 0; i < 20; i++)
-        defaultQueueLayout->addSong(this->songLoader->getRand());
+    if(this->songLoader->getRand())
+    {
+        for(int i = 0; i < 20; i++)
+            defaultQueueLayout->addSong(this->songLoader->getRand());
+    }
     layout->addLayout(defaultQueueLayout.get());
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     QObject::connect(requestedQueueLayout.get(), &QueueLayout::updatedSignal, this, &SongQueueWidget::requestedQueueUpdated);
@@ -50,6 +53,7 @@ void SongQueueWidget::defaultQueueUpdated() {
 }
 
 void SongQueueWidget::topOffQueue() {
-    for(int i = requestedQueueLayout->count() + defaultQueueLayout->count(); i < 20; i++)
-        defaultQueueLayout->addSong(this->songLoader->getRand(), true);
+    if(songLoader->getRand())
+        for(int i = requestedQueueLayout->count() + defaultQueueLayout->count(); i < 20; i++)
+            defaultQueueLayout->addSong(this->songLoader->getRand(), true);
 }

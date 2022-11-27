@@ -33,7 +33,10 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     layout->addWidget(playButton.get(), 1, 3);
     layout->addWidget(pauseButton.get(), 1, 4);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 5, 3, 1);
-    setSong(this->defaultQueue->getNextSong());
+    if(this->defaultQueue->hasSongs())
+    {
+        setSong(this->defaultQueue->getNextSong());
+    }
     connect(player.get(), &QMediaPlayer::mediaStatusChanged, this, &CurrentSongWidget::mediaStatusChanged);
     connect(player.get(), &QMediaPlayer::positionChanged, this, &CurrentSongWidget::positionChanged);
     connect(pauseAtEndButtonButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::pauseAtEndButton);
@@ -54,6 +57,27 @@ void CurrentSongWidget::setSong(const std::shared_ptr<Song>& song) {
     adjustSize();
 }
 
+QString toTime(long long time) {
+    long long hours = time / 3600;
+    long long minutes = (time / 60) % 60;
+    long long seconds = time % 60;
+    if(hours == 0) {
+        if(seconds < 10)
+            return QString::number(minutes) + ":0" + QString::number(seconds);
+        return QString::number(minutes) + ":" + QString::number(seconds);
+    } else {
+        if(minutes < 10) {
+            if(seconds < 10)
+                return QString::number(hours) + ":0" + QString::number(minutes) + ":0" + QString::number(seconds);
+            return QString::number(hours) + ":0" + QString::number(minutes) + ":" + QString::number(seconds);
+        } else {
+            if(seconds < 10)
+                return QString::number(hours) + ":" + QString::number(minutes) + ":0" + QString::number(seconds);
+            return QString::number(hours) + ":" + QString::number(minutes) + ":" + QString::number(seconds);
+        }
+    }
+}
+
 void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
     if (status == QMediaPlayer::EndOfMedia) {
         playNextSong();
@@ -62,7 +86,7 @@ void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
         }
     }
     else if (status == QMediaPlayer::LoadedMedia) {
-        timeLabel2->setText(QString::number(player->duration() / 1000));
+        timeLabel2->setText(toTime(player->duration() / 1000));
     }
 }
 

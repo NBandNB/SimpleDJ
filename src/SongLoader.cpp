@@ -26,9 +26,9 @@ SongLoader::SongLoader(const std::filesystem::path& directory)
         line = line.substr(line.find(',') + 1);
         std::string author = line.substr(0, line.find(','));
 
-        std::ifstream songStream = std::ifstream(directory / (id + ".flac"));
+        std::ifstream songStream = std::ifstream(directory / (id + ".wav"));
         if(!file.is_open())
-            throw std::runtime_error("Could not open " + id + ".flac");
+            throw std::runtime_error("Could not open " + id + ".wav");
         QImage image = QImage(QString::fromStdString((directory / (id + ".jpg")).string()));
         songs.insert(std::make_pair(QString::fromStdString(id), std::make_shared<Song>(QString::fromStdString(name), QString::fromStdString(author), image, QString::fromStdString(id), true)));
     }
@@ -58,7 +58,7 @@ void SongLoader::downloadLoop(){
         QString id = downloadQueue.front();
         downloadQueue.pop();
         lock.unlock();
-        std::filesystem::path path = directory / (id.toStdString() + ".flac");
+        std::filesystem::path path = directory / (id.toStdString() + ".wav");
         CURL* curl = curl_easy_init();
         QImage image;
         //ACTUALLY DOWNLOAD IMAGE AND SAVE IT TO THE FILE HERE
@@ -82,7 +82,7 @@ void SongLoader::downloadLoop(){
         songs.at(id)->setImageDownloaded();
         lock.unlock();
         // ACTUALLY DOWNLOAD IT HERE
-        system(("youtube-dl -f bestaudio --extract-audio --audio-format flac --output \"" + path.parent_path().string() + (const char)std::filesystem::path::preferred_separator + id.toStdString() + ".%(ext)s\" " + id.toStdString()).c_str());
+        system(("youtube-dl -f bestaudio --extract-audio --audio-format wav --output \"" + path.parent_path().string() + (const char)std::filesystem::path::preferred_separator + id.toStdString() + ".%(ext)s\" " + id.toStdString()).c_str());
 
 
 
@@ -118,5 +118,5 @@ bool SongLoader::isDownloaded(const QString &id) {
 }
 
 QString SongLoader::getSongPath(const QString &id) {
-    return QString::fromStdString((directory / (id.toStdString() + ".flac")).string());
+    return QString::fromStdString((directory / (id.toStdString() + ".wav")).string());
 }
