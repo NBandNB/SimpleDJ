@@ -61,12 +61,7 @@ void SongLoader::downloadLoop(){
         while(!deleteQueue.empty()){
             QString id = deleteQueue.front();
             deleteQueue.pop();
-            songs.at(id)->setDownloaded(false);
-            songs.at(id)->setImage(QImage());
-            songs.at(id)->setImageDownloaded(false);
-            songIds.remove(id.toStdString());
             lock.unlock();
-            deleteSongSignal(id);
             if(std::remove((directory / (id.toStdString() + ".wav")).string().c_str()) &&
             std::remove((directory / (id.toStdString() + ".jpg")).string().c_str())) {
                 lock.lock();
@@ -131,6 +126,12 @@ void SongLoader::downloadLoop(){
 void SongLoader::deleteSong(const QString& id){
     std::unique_lock lock(mutex);
     deleteQueue.push(id);
+    songs.at(id)->setDownloaded(false);
+    songs.at(id)->setImage(QImage());
+    songs.at(id)->setImageDownloaded(false);
+    songIds.remove(id.toStdString());
+    lock.unlock();
+    deleteSongSignal(id);
 }
 
 std::shared_ptr<Song> SongLoader::getRand() {
