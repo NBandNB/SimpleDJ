@@ -33,6 +33,8 @@ private slots:
     void unlock();
     void unlockButtonPress();
     void lockButtonPress();
+    void songDeleted(const QString& id);
+    void songDownloaded(const QString& id);
 
 
 private:

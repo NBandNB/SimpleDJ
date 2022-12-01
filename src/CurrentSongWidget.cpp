@@ -44,6 +44,10 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     if(this->defaultQueue->hasSongs())
     {
         setSong(this->defaultQueue->getNextSong());
+    } else
+    {
+        timeLabel->setText("00:00");
+        timeLabel2->setText("00:00");
     }
     connect(player.get(), &QMediaPlayer::mediaStatusChanged, this, &CurrentSongWidget::mediaStatusChanged);
     connect(player.get(), &QMediaPlayer::positionChanged, this, &CurrentSongWidget::positionChanged);
@@ -58,6 +62,8 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     connect(changePinButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::changePin);
     connect(this->songLoader.get(), &SongLoader::lockedSignal, this, &CurrentSongWidget::lock);
     connect(this->songLoader.get(), &SongLoader::unlockedSignal, this, &CurrentSongWidget::unlock);
+    connect(this->songLoader.get(), &SongLoader::deleteSongSignal, this, &CurrentSongWidget::songDeleted);
+    connect(this->songLoader.get(), &SongLoader::downloadCompleteSignal, this, &CurrentSongWidget::songDownloaded);
     unlock();
     show();
 }
@@ -114,18 +120,17 @@ void CurrentSongWidget::playNextSong() {
         setSong(requestedQueue->getNextSong());
     } else if(defaultQueue->hasSongs()){
         setSong(defaultQueue->getNextSong());
+    } else if(songLoader->hasDownloaded()){
+        setSong(songLoader->getRand());
     } else {
-        std::shared_ptr<Song> song;
-        for (int i = 0; i < 10; i++) {
-            song = songLoader->getRand();
-            if (song->getDownloaded()) {
-                break;
-            }
-        }
-        if (!song->getDownloaded()) {
-            player->pause();
-        }
-        setSong(song);
+        player->stop();
+        currentSong = nullptr;
+        image->setPixmap(QPixmap::fromImage(QImage()).scaled(250, 250, Qt::KeepAspectRatio));
+        title->setText("");
+        author->setText("");
+        player->setSource(QUrl::fromLocalFile(""));
+        player->play();
+        adjustSize();
     }
 }
 
@@ -165,5 +170,17 @@ void CurrentSongWidget::unlock() {
     lockButton->setEnabled(true);
     unlockButton->setEnabled(false);
     changePinButton->setEnabled(true);
+}
+
+void CurrentSongWidget::songDeleted(const QString& id) {
+    if(id == currentSong->getId()){
+        playNextSong();
+    }
+}
+
+void CurrentSongWidget::songDownloaded(const QString& id) {
+    if(player->playbackState() == QMediaPlayer::StoppedState){
+        playNextSong();
+    }
 }
 

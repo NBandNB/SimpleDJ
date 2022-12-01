@@ -48,7 +48,7 @@ SongLoader::~SongLoader() {
 
 void SongLoader::download(const std::shared_ptr<Song>& song) {
     std::unique_lock lock(mutex);
-    downloadQueue.push(std::pair<QString, bool>(song->getId(), songs.contains(song->getId())));
+    downloadQueue.emplace(song->getId(), songs.contains(song->getId()));
     if(!songs.contains(song->getId())){
         songs.emplace(song->getId(), song);
     }
@@ -64,6 +64,7 @@ void SongLoader::downloadLoop(){
             songs.at(id)->setDownloaded(false);
             songs.at(id)->setImage(QImage());
             songs.at(id)->setImageDownloaded(false);
+            songIds.remove(id.toStdString());
             lock.unlock();
             deleteSongSignal(id);
             if(std::remove((directory / (id.toStdString() + ".wav")).string().c_str()) &&
@@ -121,8 +122,9 @@ void SongLoader::downloadLoop(){
         if(!exists)
             file << (id.toStdString() + ',' + songs.at(id)->getName().toStdString() + ',' + songs.at(id)->getAuthor().toStdString()) << std::endl;
         songs.at(id)->setDownloaded();
+        songIds.push_back(id.toStdString());
         lock.unlock();
-
+        downloadCompleteSignal(id);
     }
 }
 
@@ -133,16 +135,13 @@ void SongLoader::deleteSong(const QString& id){
 
 std::shared_ptr<Song> SongLoader::getRand() {
     std::shared_lock lock(mutex);
-    if(songs.empty()) {
+    if(songIds.empty()) {
         return nullptr;
     }
-    int rand = std::rand() % songs.size();
-    auto it = songs.begin();
+    int rand = std::rand() % songIds.size();
+    auto it = songIds.begin();
     std::advance(it, rand);
-    if(it->second->getDownloaded())
-        return it->second;
-    lock.unlock();
-    return getRand();
+    return songs.at(QString::fromStdString(*it));
 }
 
 std::shared_ptr<Song> SongLoader::getById(const QString &id){
@@ -194,3 +193,7 @@ void SongLoader::lock(){
         locked = true;
 }
 
+bool SongLoader::hasDownloaded() {
+    std::shared_lock lock(mutex);
+    return !songIds.empty();
+}

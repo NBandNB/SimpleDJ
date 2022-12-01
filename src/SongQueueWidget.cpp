@@ -16,17 +16,17 @@ SongQueueWidget::SongQueueWidget(std::shared_ptr<SongLoader> songLoader, QWidget
     layout->addWidget(requestedQueueLabel.get());
     layout->addLayout(requestedQueueLayout.get());
     layout->addWidget(defaultQueueLabel.get());
-    if(this->songLoader->getRand())
-    {
-        for(int i = 0; i < 20; i++)
-            defaultQueueLayout->addSong(this->songLoader->getRand());
-    }
+    topOffQueue();
     layout->addLayout(defaultQueueLayout.get());
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     QObject::connect(requestedQueueLayout.get(), &QueueLayout::updatedSignal, this, &SongQueueWidget::requestedQueueUpdated);
     QObject::connect(defaultQueueLayout.get(), &QueueLayout::updatedSignal, this, &SongQueueWidget::defaultQueueUpdated);
     mainWidget->setLayout(layout.get());
+    mainWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
     setWidget(mainWidget);
+    setWidgetResizable(true);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     show();
 }
 
@@ -41,19 +41,21 @@ std::shared_ptr<QueueLayout> SongQueueWidget::getRequestedQueue() {
 void SongQueueWidget::requestedQueueUpdated() {
     topOffQueue();
     defaultQueueLayout->update();
-    mainWidget->adjustSize();
+    //mainWidget->adjustSize();
     adjustSize();
 }
 
 void SongQueueWidget::defaultQueueUpdated() {
     topOffQueue();
     requestedQueueLayout->update();
-    mainWidget->adjustSize();
+    //mainWidget->adjustSize();
     adjustSize();
 }
 
 void SongQueueWidget::topOffQueue() {
-    if(songLoader->getRand())
-        for(int i = requestedQueueLayout->count() + defaultQueueLayout->count(); i < 20; i++)
-            defaultQueueLayout->addSong(this->songLoader->getRand(), true);
+    if(!songLoader->hasDownloaded())
+        return;
+
+    for(int i = requestedQueueLayout->count() + defaultQueueLayout->count(); i < 20; i++)
+        defaultQueueLayout->addSong(this->songLoader->getRand(), true);
 }

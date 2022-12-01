@@ -36,6 +36,7 @@ public:
     bool containsSong(const QString& id);
     QString getSongPath(const QString& id);
     void deleteSong(const QString& id);
+    bool hasDownloaded();
 
     bool isLocked() const;
     void setPin(const QString& newPin);
