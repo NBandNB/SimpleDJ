@@ -8,6 +8,7 @@
 #include <queue>
 #include <fstream>
 #include "Song.h"
+#include <thread>
 
 class SongLoader : public QObject
 {
@@ -16,13 +17,19 @@ private:
     std::filesystem::path directory;
 
     std::shared_mutex mutex;
+    //All songs that have ever been downloaded and there is still a record of
     std::unordered_map<QString, std::shared_ptr<Song>> songs;
+    //Songs that need to be downloaded and whether there is a record of them in songs.csv file.
     std::queue<std::pair<QString, bool>> downloadQueue;
+    //Songs that need to be deleted
     std::queue<QString> deleteQueue;
+    //A list of ids of songs that are currently downloaded.
     std::list<std::string> songIds;
 
     bool locked;
     QString pin;
+
+    bool abort = false;
 
 public:
     SongLoader(const std::filesystem::path& directory);

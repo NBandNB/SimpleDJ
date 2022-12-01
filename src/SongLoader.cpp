@@ -40,10 +40,16 @@ SongLoader::SongLoader(const std::filesystem::path& directory)
     }
     file.close();
     curl_global_init(CURL_GLOBAL_ALL);
+
+    std::thread songLoaderThread(&SongLoader::downloadLoop, this);
+    songLoaderThread.detach();
 }
 
 SongLoader::~SongLoader() {
     curl_global_cleanup();
+    std::unique_lock lock(mutex);
+    abort = true;
+    lock.unlock();
 }
 
 void SongLoader::download(const std::shared_ptr<Song>& song) {
@@ -56,8 +62,14 @@ void SongLoader::download(const std::shared_ptr<Song>& song) {
 
 void SongLoader::downloadLoop(){
     std::fstream file = std::fstream(directory / "songs.csv", std::ios::out | std::ios::in | std::ios::app);
+    std::unique_lock lock(mutex);
+    lock.unlock();
     while(true) {
-        std::unique_lock lock(mutex);
+        lock.lock();
+        if(abort){
+            lock.unlock();
+            return;
+        }
         while(!deleteQueue.empty()){
             QString id = deleteQueue.front();
             deleteQueue.pop();

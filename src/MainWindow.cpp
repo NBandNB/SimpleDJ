@@ -19,7 +19,4 @@ MainWindow::MainWindow(const std::filesystem::path& appDir, QWidget *parent)
     lowerLayout->addWidget(songSearchWidget.get());
     mainLayout->addLayout(lowerLayout.get());
     centralWidget->setLayout(mainLayout.get());
-
-    std::thread songLoaderThread(&SongLoader::downloadLoop, songLoader);
-    songLoaderThread.detach();
 }

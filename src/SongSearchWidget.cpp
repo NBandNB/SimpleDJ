@@ -51,6 +51,9 @@ SongSearchWidget::SongSearchWidget(std::shared_ptr<QueueLayout> requestedQueue, 
 
 SongSearchWidget::~SongSearchWidget(){
     curl_global_cleanup();
+    std::unique_lock lock(searchTermMutex);
+    abort = true;
+    lock.unlock();
 }
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
@@ -61,8 +64,13 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 
 void SongSearchWidget::downloadLoop(){
     std::string lastSearch;
+    std::shared_lock lock(searchTermMutex);
+    lock.unlock();
     while(true){
-        std::shared_lock lock(searchTermMutex);
+        lock.lock();
+        if(abort){
+            return;
+        }
         if(lastSearch == searchTerm) {
             lock.unlock();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));

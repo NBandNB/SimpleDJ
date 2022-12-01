@@ -25,6 +25,8 @@ private slots:
 private:
     void downloadLoop();
 
+    bool abort = false;
+
     std::shared_mutex searchTermMutex;
     std::string searchTerm;
 
