@@ -40,16 +40,10 @@ std::shared_ptr<QueueLayout> SongQueueWidget::getRequestedQueue() {
 
 void SongQueueWidget::requestedQueueUpdated() {
     topOffQueue();
-    defaultQueueLayout->update();
-    //mainWidget->adjustSize();
-    adjustSize();
 }
 
 void SongQueueWidget::defaultQueueUpdated() {
     topOffQueue();
-    requestedQueueLayout->update();
-    //mainWidget->adjustSize();
-    adjustSize();
 }
 
 void SongQueueWidget::topOffQueue() {

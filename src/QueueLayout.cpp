@@ -28,7 +28,6 @@ void QueueLayout::removeSong()
 {
     removeWidget(dynamic_cast<QPushButton*>(sender())->parentWidget());
     dynamic_cast<QPushButton*>(sender())->parentWidget()->deleteLater();
-    update();
     updatedSignal();
 }
 
@@ -47,7 +46,6 @@ void QueueLayout::deleteSong(const QString &id) {
         widget->deleteLater();
         offset += 1;
     }
-    update();
     updatedSignal();
 }
 
@@ -64,7 +62,6 @@ std::shared_ptr<Song> QueueLayout::getNextSong() {
         if(songQueueItemWidget->getSong()->getDownloaded()){
             song = songQueueItemWidget->getSong();
             QBoxLayout::takeAt(i)->widget()->deleteLater();
-            update();
             updatedSignal();
             return song;
         }
@@ -75,14 +72,10 @@ std::shared_ptr<Song> QueueLayout::getNextSong() {
 //Returns true if there are any songs(that have been downloaded) in the queue.
 bool QueueLayout::hasSongs() const {
     if(count() > 0){
-        for(int i = 0; i < count(); i++){
-            if(dynamic_cast<SongQueueItemWidget*>(itemAt(i)->widget())->getSong()->getDownloaded()){
+        for(int i = 0; i < count(); i++)
+            if(dynamic_cast<SongQueueItemWidget*>(itemAt(i)->widget())->getSong()->getDownloaded())
                 return true;
-            }
-        }
-        return false;
-    } else {
-        return false;
     }
+    return false;
 }
 
