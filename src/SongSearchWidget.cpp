@@ -17,12 +17,12 @@ SongSearchWidget::SongSearchWidget(std::shared_ptr<QueueLayout> requestedQueue, 
     : QWidget(parent),
     songLoader(std::move(songLoader)),
     requestedQueue(std::move(requestedQueue)),
-    searchLayout(std::make_shared<QHBoxLayout>(this)),
+    searchLayout(std::make_shared<QHBoxLayout>()),
     searchButton(std::make_shared<QPushButton>(this)),
     searchBox(std::make_shared<QLineEdit>(this)),
     searchResults(std::make_shared<QScrollArea>(this)),
     searchResultsWidget(std::make_shared<QWidget>(searchResults.get())),
-    searchResultsLayout(std::make_shared<QVBoxLayout>(searchResultsWidget.get())),
+    searchResultsLayout(std::make_shared<QVBoxLayout>()),
     layout(std::make_shared<QVBoxLayout>(this))
 {
     setMinimumWidth(300);

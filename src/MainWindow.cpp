@@ -8,7 +8,7 @@ MainWindow::MainWindow(const std::filesystem::path& appDir, QWidget *parent)
     songQueueWidget(std::make_shared<SongQueueWidget>(songLoader, centralWidget.get())),
     songSearchWidget(std::make_shared<SongSearchWidget>(songQueueWidget->getRequestedQueue(), songLoader, centralWidget.get())),
     currentSongWidget(std::make_shared<CurrentSongWidget>(songQueueWidget->getRequestedQueue(), songQueueWidget->getDefaultQueue(), songLoader, centralWidget.get())),
-    lowerLayout(std::make_shared<QHBoxLayout>(centralWidget.get())),
+    lowerLayout(std::make_shared<QHBoxLayout>()),
     mainLayout(std::make_shared<QVBoxLayout>(centralWidget.get()))
 {
     setWindowTitle("SimpleDJ");
@@ -18,5 +18,4 @@ MainWindow::MainWindow(const std::filesystem::path& appDir, QWidget *parent)
     lowerLayout->addWidget(songQueueWidget.get());
     lowerLayout->addWidget(songSearchWidget.get());
     mainLayout->addLayout(lowerLayout.get());
-    centralWidget->setLayout(mainLayout.get());
 }

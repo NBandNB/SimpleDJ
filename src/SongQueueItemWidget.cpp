@@ -10,10 +10,11 @@ SongQueueItemWidget::SongQueueItemWidget(const std::shared_ptr<Song>& song, QWid
     imageLabel(std::make_shared<QLabel>(this)),
     removeButton(std::make_shared<QPushButton>("Remove", this))
 {
-    if(!song->getDownloaded()){
+    if(!song->getImageDownloaded()){
         connect(song.get(), &Song::imageDownloadedSignal, this, &SongQueueItemWidget::loadImage);
     }
-    imageLabel->setPixmap(QPixmap::fromImage(song->getImage()).scaled(200, 200, Qt::KeepAspectRatio));
+    else
+        imageLabel->setPixmap(QPixmap::fromImage(song->getImage()).scaled(200, 200, Qt::KeepAspectRatio));
     layout->addWidget(imageLabel.get(), 0, 0, 3, 1);
     layout->addWidget(songNameLabel.get(), 0, 1);
     layout->addWidget(artistNameLabel.get(), 1, 1);

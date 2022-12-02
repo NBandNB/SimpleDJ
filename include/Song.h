@@ -18,7 +18,7 @@ private:
 
 public:
     Song();
-    Song(QString name, QString author, QImage image, QString id, bool downloaded = false);
+    Song(QString name, QString author, QImage image, QString id, bool downloaded = false, bool imageDownloaded = false);
 
     QString getName();
     QString getAuthor();

@@ -4,8 +4,8 @@
 
 Song::Song() = default;
 
-Song::Song(QString name, QString author, QImage image, QString id, bool downloaded)
-    : name(std::move(name)), author(std::move(author)), image(std::move(image)), id(std::move(id)), downloaded(downloaded) {
+Song::Song(QString name, QString author, QImage image, QString id, bool downloaded, bool imageDownloaded)
+    : name(std::move(name)), author(std::move(author)), image(std::move(image)), id(std::move(id)), downloaded(downloaded), imageDownloaded(imageDownloaded) {
 }
 
 QString Song::getName() {

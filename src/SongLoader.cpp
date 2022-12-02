@@ -32,10 +32,10 @@ SongLoader::SongLoader(const std::filesystem::path& directory)
         std::ifstream imageStream = std::ifstream(directory / (id + ".jpg"));
         QImage image = QImage(QString::fromStdString((directory / (id + ".jpg")).string()));
         if(!songStream.is_open() || !imageStream.is_open()) {
-            songs.emplace(QString::fromStdString(id), std::make_shared<Song>(QString::fromStdString(name), QString::fromStdString(author), image, QString::fromStdString(id), false));
+            songs.emplace(QString::fromStdString(id), std::make_shared<Song>(QString::fromStdString(name), QString::fromStdString(author), image, QString::fromStdString(id), songStream.is_open(), imageStream.is_open()));
             continue;
         }
-        songs.emplace(QString::fromStdString(id), std::make_shared<Song>(QString::fromStdString(name), QString::fromStdString(author), image, QString::fromStdString(id), true));
+        songs.emplace(QString::fromStdString(id), std::make_shared<Song>(QString::fromStdString(name), QString::fromStdString(author), image, QString::fromStdString(id), true, true));
         songIds.push_back(id);
     }
     file.close();

@@ -13,7 +13,6 @@ QueueLayout::QueueLayout(std::shared_ptr<SongLoader> songLoader, QWidget *parent
 void QueueLayout::addSong(const std::shared_ptr<Song>& song, bool noSignal)
 {
     addWidget(new SongQueueItemWidget(song, this->parentWidget()));
-    std::cout << "Added song " << song->getName().toStdString() << " to queue, " << count() << "songs in queue" << std::endl;
     connect(dynamic_cast<SongQueueItemWidget*>(itemAt(count() - 1)->widget())->getRemoveButton().get(), &QPushButton::clicked, this, &QueueLayout::removeSong);
     update();
     //If we have been asked to not emit a signal, don't emit a signal.
