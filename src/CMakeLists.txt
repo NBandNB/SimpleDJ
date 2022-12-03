@@ -43,5 +43,7 @@ target_link_libraries(SimpleDJ PRIVATE
         Qt::Widgets
         Qt::Multimedia
         libcurl
-        wolfssl
-        )
+        wolfssl)
+set_property(TARGET SimpleDJ PROPERTY WIN32_EXECUTABLE true)
+
+install(TARGETS SimpleDJ RUNTIME DESTINATION bin)
