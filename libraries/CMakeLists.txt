@@ -1,4 +1,4 @@
-#wolfssl
+#wolfssl Licensed under GPLv2
 set(BUILD_SHARED_LIBS OFF)
 set(WOLFSSL_BUILD_OUT_OF_TREE ON)
 set(WOLFSSL_OPENSSLEXTRA ON)
@@ -14,8 +14,7 @@ unset(WOLFSSL_DES3)
 unset(WOLFSSL_SP_MATH_ALL)
 unset(WOLFSSL_FAST_MATH)
 
-#libcURL
-
+#libcURL licensed under MIT-like, CURL license
 set(BUILD_CURL_EXE OFF)
 set(BUILD_SHARED_LIBS OFF)
 set(HTTP_ONLY ON)
