@@ -98,6 +98,7 @@ void CurrentSongWidget::mediaStatusChanged(QMediaPlayer::MediaStatus status) {
     if (status == QMediaPlayer::EndOfMedia) {
         playNextSong();
         if(pauseAtEnd){
+            pauseAtEnd = false;
             pause();
         }
     }
