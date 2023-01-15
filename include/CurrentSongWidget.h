@@ -24,6 +24,7 @@ private slots:
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
     void pauseAtEndButton();
+    void playAtEndButton();
     void playNextSong();
     void play();
     void pause();
@@ -51,8 +52,11 @@ private:
     std::shared_ptr<QLabel> timeLabel;
     std::shared_ptr<QLabel> timeLabel2;
 
+    std::shared_ptr<QBoxLayout> atEndLayout;
     std::shared_ptr<QPushButton> pauseAtEndButtonButton;
+    std::shared_ptr<QPushButton> playAtEndButtonButton;
     std::shared_ptr<QPushButton> playNextSongButton;
+    std::shared_ptr<QBoxLayout> playPauseLayout;
     std::shared_ptr<QPushButton> playButton;
     std::shared_ptr<QPushButton> pauseButton;
     std::shared_ptr<QPushButton> returnToBeginningButton;

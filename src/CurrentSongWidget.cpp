@@ -11,8 +11,11 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     author(std::make_shared<QLabel>(this)),
     timeLabel(std::make_shared<QLabel>(this)),
     timeLabel2(std::make_shared<QLabel>(this)),
+    atEndLayout(std::make_shared<QHBoxLayout>(this)),
     pauseAtEndButtonButton(std::make_shared<QPushButton>("Pause at end", this)),
+    playAtEndButtonButton(std::make_shared<QPushButton>("Play at end", this)),
     playNextSongButton(std::make_shared<QPushButton>("Play next song", this)),
+    playPauseLayout(std::make_shared<QHBoxLayout>(this)),
     playButton(std::make_shared<QPushButton>("Play", this)),
     pauseButton(std::make_shared<QPushButton>("Pause", this)),
     returnToBeginningButton(std::make_shared<QPushButton>("Return to beginning", this)),
@@ -32,15 +35,20 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     layout->addWidget(author.get(), 1, 1, 1, 2);
     layout->addWidget(timeLabel.get(), 2, 1);
     layout->addWidget(timeLabel2.get(), 2, 2);
-    layout->addWidget(pauseAtEndButtonButton.get(), 2, 3, 1, 2);
+    layout->addLayout(atEndLayout.get(), 2, 3, 1, 2);
     layout->addWidget(playNextSongButton.get(), 0, 3);
     layout->addWidget(returnToBeginningButton.get(), 0, 4);
-    layout->addWidget(playButton.get(), 1, 3);
+    layout->addLayout(playPauseLayout.get(), 1, 3, 1, 2);
     layout->addWidget(pauseButton.get(), 1, 4);
     layout->addWidget(lockButton.get(), 0, 5);
     layout->addWidget(unlockButton.get(), 1, 5);
     layout->addWidget(changePinButton.get(), 2, 5);
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 6, 3, 1);
+
+    atEndLayout->addWidget(pauseAtEndButtonButton.get());
+    atEndLayout->addWidget(playAtEndButtonButton.get());
+    playPauseLayout->addWidget(playButton.get());
+    playPauseLayout->addWidget(pauseButton.get());
     if(this->defaultQueue->hasSongs())
     {
         setSong(this->defaultQueue->getNextSong());
@@ -53,6 +61,7 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     connect(player.get(), &QMediaPlayer::positionChanged, this, &CurrentSongWidget::positionChanged);
     connect(player.get(), &QMediaPlayer::durationChanged, this, &CurrentSongWidget::durationChanged);
     connect(pauseAtEndButtonButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::pauseAtEndButton);
+    connect(playAtEndButtonButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::playAtEndButton);
     connect(playNextSongButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::playNextSong);
     connect(playButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::play);
     connect(pauseButton.get(), &QPushButton::clicked, this, &CurrentSongWidget::pause);
@@ -64,6 +73,11 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     connect(this->songLoader.get(), &SongLoader::unlockedSignal, this, &CurrentSongWidget::unlock);
     connect(this->songLoader.get(), &SongLoader::deleteSongSignal, this, &CurrentSongWidget::songDeleted);
     connect(this->songLoader.get(), &SongLoader::downloadCompleteSignal, this, &CurrentSongWidget::songDownloaded);
+
+    playButton->show();
+    pauseButton->hide();
+    pauseAtEndButtonButton->show();
+    playAtEndButtonButton->hide();
     unlock();
     show();
 }
@@ -114,6 +128,14 @@ void CurrentSongWidget::durationChanged(qint64 duration) {
 
 void CurrentSongWidget::pauseAtEndButton() {
     pauseAtEnd = true;
+    playAtEndButtonButton->show();
+    pauseAtEndButtonButton->hide();
+}
+
+void CurrentSongWidget::playAtEndButton() {
+    pauseAtEnd = false;
+    playAtEndButtonButton->hide();
+    pauseAtEndButtonButton->show();
 }
 
 void CurrentSongWidget::playNextSong() {
@@ -137,10 +159,14 @@ void CurrentSongWidget::playNextSong() {
 
 void CurrentSongWidget::play() {
     player->play();
+    playButton->hide();
+    pauseButton->show();
 }
 
 void CurrentSongWidget::pause() {
     player->pause();
+    playButton->show();
+    pauseButton->hide();
 }
 
 void CurrentSongWidget::returnToBeginning() {
