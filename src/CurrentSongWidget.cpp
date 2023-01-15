@@ -49,14 +49,7 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     atEndLayout->addWidget(playAtEndButtonButton.get());
     playPauseLayout->addWidget(playButton.get());
     playPauseLayout->addWidget(pauseButton.get());
-    if(this->defaultQueue->hasSongs())
-    {
-        setSong(this->defaultQueue->getNextSong());
-    } else
-    {
-        timeLabel->setText("00:00");
-        timeLabel2->setText("00:00");
-    }
+
     connect(player.get(), &QMediaPlayer::mediaStatusChanged, this, &CurrentSongWidget::mediaStatusChanged);
     connect(player.get(), &QMediaPlayer::positionChanged, this, &CurrentSongWidget::positionChanged);
     connect(player.get(), &QMediaPlayer::durationChanged, this, &CurrentSongWidget::durationChanged);
@@ -78,6 +71,14 @@ CurrentSongWidget::CurrentSongWidget(std::shared_ptr<QueueLayout> requestedQueue
     pauseButton->hide();
     pauseAtEndButtonButton->show();
     playAtEndButtonButton->hide();
+
+    if(this->defaultQueue->hasSongs())
+        setSong(this->defaultQueue->getNextSong());
+    else{
+        timeLabel->setText("00:00");
+        timeLabel2->setText("00:00");
+    }
+
     unlock();
     show();
 }
@@ -88,7 +89,7 @@ void CurrentSongWidget::setSong(const std::shared_ptr<Song>& song) {
     title->setText(song->getName());
     author->setText(song->getAuthor());
     player->setSource(QUrl::fromLocalFile(songLoader->getSongPath(song->getId())));
-    player->play();
+    play();
     adjustSize();
 }
 
@@ -152,7 +153,7 @@ void CurrentSongWidget::playNextSong() {
         title->setText("");
         author->setText("");
         player->setSource(QUrl::fromLocalFile(""));
-        player->play();
+        play();
         adjustSize();
     }
 }
